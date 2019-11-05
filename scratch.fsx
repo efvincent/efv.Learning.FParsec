@@ -23,3 +23,46 @@ let str s = pstring s
 let floatBetweenBrackets:Parser<'a,unit> = str "[" >>. pfloat .>> str "]"
 
 test floatBetweenBrackets "[1.0]"
+
+test floatBetweenBrackets "[]"
+
+let between pBegin pEnd p = pBegin >>. p >>. pEnd
+
+let betweenStrings s1 s2 p = str s1 >>. p .>> str s2
+
+let floatBetweenBrackets:Parser<float,unit> = betweenStrings "[" "]" pfloat
+
+let floatBetweenDoubleBrackets:Parser<float,unit> = pfloat |> betweenStrings "[[" "]]"
+
+test (many floatBetweenBrackets) ""
+
+test (many floatBetweenBrackets) "[1.0]"
+
+test (many floatBetweenBrackets) "[1][2][23][43.12]"
+
+test (many floatBetweenBrackets) "[2][3][34E]"
+
+test (many1 floatBetweenBrackets) ""
+
+let floatList:Parser<'a list,unit> = str "[" >>. sepBy pfloat (str ",") .>> str "]"
+
+test floatList "[]"
+
+test floatList "[2,3,4,23.33,3.4E3]"
+
+test floatList "[2,434,422"
+
+test floatList "[23,11, 4343"
+
+let ws = spaces
+
+let str_ws s = pstring s .>> ws
+let float_ws:Parser<float,unit> = pfloat .>> ws
+
+let numberList = str_ws "[" >>. sepBy float_ws (str_ws ",") .>> str_ws "]"
+
+test numberList "[1,2,3]"
+
+test numberList 9
+
+// NEXT: 4.7 Parsing String Data
