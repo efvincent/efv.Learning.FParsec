@@ -22,3 +22,6 @@ Note the order of the references is important, the `*CS.dll` comes first or you'
 ```
 error FS0074: The type referenced through’FParsec.CharStream`1’ is defined in an assembly that is not referenced.
 ```
+
+## Tutorial
+Find it [here](http://www.quanttec.com/fparsec/tutorial.html#preliminaries)
