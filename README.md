@@ -23,5 +23,12 @@ Note the order of the references is important, the `*CS.dll` comes first or you'
 error FS0074: The type referenced through’FParsec.CharStream`1’ is defined in an assembly that is not referenced.
 ```
 
-## Tutorial
-Find it [here](http://www.quanttec.com/fparsec/tutorial.html#preliminaries)
+### FSI Setup
+FSI Code completion & intellisense doesn't work when FSAC Runtime is set to .NET Core in vscode. It needs to be set to net:
+```
+"FSharp.fsacRuntime": "net"
+```
+
+## References
+[Tutorial](http://www.quanttec.com/fparsec/tutorial.html#preliminaries)
+[Small Example in Blog](https://geekeh.com/post/starting-small-with-fparsec/)

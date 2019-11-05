@@ -12,3 +12,14 @@ let test p str =
   | Failure(errMsg,_,_) -> printfn "Failure: %s" errMsg
 
 test p "input" 
+
+test pfloat "1.23"
+
+test pfloat "1.25E 3"
+
+// parsing a float between brackets
+
+let str s = pstring s
+let floatBetweenBrackets:Parser<'a,unit> = str "[" >>. pfloat .>> str "]"
+
+test floatBetweenBrackets "[1.0]"
