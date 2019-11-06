@@ -20,17 +20,16 @@ test pfloat "1.25E 3"
 // parsing a float between brackets
 
 let str s = pstring s
-let floatBetweenBrackets:Parser<float,unit> = str "[" >>. pfloat .>> str "]"
+
+let between pBegin pEnd p = pBegin >>. p .>> pEnd
+
+let betweenStrings s1 s2 p = between (str s1) (str s2) p
+
+let floatBetweenBrackets:Parser<float,unit> = betweenStrings "[" "]" pfloat
 
 test floatBetweenBrackets "[1.0]"
 
 test floatBetweenBrackets "[]"
-
-let between pBegin pEnd p = pBegin >>. p >>. pEnd
-
-let betweenStrings s1 s2 p = str s1 >>. p .>> str s2
-
-let floatBetweenBrackets:Parser<float,unit> = betweenStrings "[" "]" pfloat
 
 let floatBetweenDoubleBrackets:Parser<float,unit> = pfloat |> betweenStrings "[[" "]]"
 
@@ -109,36 +108,61 @@ let stringLiteral:Parser<string,unit> =
     (manyChars (normalChar <|> escapedChar))
 
 let stringLiteral2:Parser<string,unit> =
-    let normalChar = satisfy (fun c -> c <> '\\' && c <> '"')
+    let normalCharSnippet = many1Satisfy (fun c -> c <> '\\' && c <> '"')
     let unescape c = match c with
-                     | 'n' -> '\n'
-                     | 'r' -> '\r'
-                     | 't' -> '\t'
-                     | c   -> c
+                     | 'n' -> "\n"
+                     | 'r' -> "\r"
+                     | 't' -> "\t"
+                     | c   -> string c
     let escapedChar = pstring "\\" >>. (anyOf "\\nrt\"" |>> unescape)
     between (pstring "\"") (pstring "\"")
-            (manyChars (normalChar <|> escapedChar))
+            (manyStrings (normalCharSnippet <|> escapedChar))
 
 test stringLiteral2 "\"abc\""
 
+let normalChar:Parser<string,unit> = 
+  many1Satisfy (fun c -> "\\\"[]{}()" |> Seq.contains c |> not)
+
+let escapedChar:Parser<string,unit> = 
+  pstring "\\" >>. 
+  (anyOf "\\nrt\"" 
+    |>> function
+        | 'n' -> "\n"
+        | 'r' -> "\r"
+        | 't' -> "\t"
+        | c   -> string c)
+
 let stringLiteral3:Parser<string,unit> =
-  let normalCharSnippet = many1Satisfy (fun c -> c <> '\\' && c <> '"')
-  let escapedChar = 
-    pstring "\\" >>. 
-    (anyOf "\\nrt\"" 
-      |>> function
-          | 'n' -> "\n"
-          | 'r' -> "\r"
-          | 't' -> "\t"
-          | c   -> string c)
   between (pstring "\"") (pstring "\"")
-          (manyStrings (normalCharSnippet <|> escapedChar))
+          (manyStrings (normalChar <|> escapedChar))
+
+test normalChar "abce"
+
+test normalChar "ab\ncd\te"
+
+test escapedChar "\\n"
+
+test (normalChar <|> escapedChar) "abc\nde"
+
+test (manyStrings (normalChar <|> escapedChar)) "abc\nde"
+
+test (betweenStrings "[" "]" (manyStrings (normalChar <|> escapedChar))) "[ab\ncde]"
+
+test ((pstring "[") >>. (manyStrings (normalChar <|> escapedChar)) .>> (pstring "]")) "[ab\ncde]"
+
+test stringLiteral2 "\"a\\\"bc\""
+
+test (ws >>. stringLiteral2 .>> ws) """
+
+"This is a string literal
+that has some carrage returns in it. Along with
+\tsome 
+\ttabs. It's also built to ignore whitespace coming before and after the string literal"
+
+"""
+
+test stringLiteral2 "abc"
 
 test stringLiteral3 "\"abc\""
 
 test stringLiteral3 "abc"
-
-(*
-  Note ... these stringLiteral parsers are not working
-  correctly, debug them
-*)
