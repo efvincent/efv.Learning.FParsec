@@ -166,3 +166,26 @@ test stringLiteral2 "abc"
 test stringLiteral3 "\"abc\""
 
 test stringLiteral3 "abc"
+
+// 4.8 Sequentially applying parsers
+// the pipe2-5 combinators apply parsers in order and take a function that
+// can combine the results into a final result.
+
+let product = pipe2 float_ws (str_ws "*" >>. float_ws) (fun x y -> x * y)
+
+test product "309 * 339"
+
+test product "3430*3300"
+
+test product "232E10 * 332E-8"
+
+type StringConstant = StringConstant of string * string
+
+let stringConstant = 
+  pipe3 ident (str_ws "=") stringLiteral3 (fun id _ s -> StringConstant(id,s))
+
+test stringConstant "myConstant = \"LEFT-RIGHT-LEFT\""
+
+// 4.9 Parsing Alternatives
+
+
