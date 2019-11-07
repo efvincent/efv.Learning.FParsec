@@ -54,6 +54,7 @@ test floatList "[2,434,422"
 test floatList "[23,11, 4343"
 
 let ws = spaces
+let ws1 = spaces1
 
 let str_ws s = pstring s .>> ws
 let float_ws:Parser<float,unit> = pfloat .>> ws
@@ -187,5 +188,29 @@ let stringConstant =
 test stringConstant "myConstant = \"LEFT-RIGHT-LEFT\""
 
 // 4.9 Parsing Alternatives
+let boolean:Parser<bool,unit> = 
+  let sret s v = pstring s .>> (eof <|> ws1) >>% v
+  ((sret "true" true) <|> (sret "false" false))
 
+test boolean "false"
+
+test boolean "true"
+
+test boolean "trueish"
+
+// for choice <|>, the right side is only attempted if the left side
+// did not consume input. For example:
+
+test ((ws >>. str "a") <|> (ws >>. str "b")) " b"
+
+// fails because the ws on the left always succeeds and consumes the space
+// and when it gets to the `str "a"` that fails and moves on. But with the
+// space consumed, the right will never be attempted and the final result is
+// the failure of `str "a"`
+// For more info see 
+// http://www.quanttec.com/fparsec/users-guide/parsing-alternatives.html
+// and
+// http://www.quanttec.com/fparsec/users-guide/looking-ahead-and-backtracking.html
+
+// 4.11 Parsing JSON
 
