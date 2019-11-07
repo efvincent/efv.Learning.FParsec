@@ -3,9 +3,14 @@
 open System
 open FParsec
 
+let test p s =
+  match run p s with 
+  | Success(result,_,_) -> printfn "Success: %A" result 
+  | Failure(errMsg,_,_) -> printfn "Failure: %s" errMsg
+
 [<EntryPoint>]
 let main argv =
   let p = pstring "test"
-  run p "input" |> printfn "%A"
+  test p "this is a string"
   printfn "\nbye!\n"
   0 // return an integer exit code
