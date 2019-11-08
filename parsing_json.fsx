@@ -2,7 +2,6 @@
 #r @"bin/Debug/netcoreapp3.0/FParsec.dll"
 
 open FParsec
-open System
 
 let p : Parser<string,unit> = pstring "test"
 
@@ -76,3 +75,40 @@ let jvalue, jvalueRef = createParserForwardedToRef<Json,unit>()
     the dummy parser with the actual value parser, once we have 
     finished constructing it.
 *)
+
+let ws = spaces
+
+let listBetweenStrings sOpen sClose pElement f =
+    between (str sOpen) (str sClose)
+        (ws >>. sepBy (pElement .>> ws) (str "," >>. ws) |>> f)
+
+let jlist = listBetweenStrings "[" "]" jvalue JList
+
+let keyValue = stringLiteral .>>. (ws >>. str ":" >>. ws >>. jvalue)
+
+let jobject = listBetweenStrings "{" "}" keyValue (Map.ofList >> JObject)
+
+do jvalueRef := choice 
+    [
+        jobject
+        jlist
+        jstring
+        jnumber
+        jtrue
+        jfalse
+        jnumber
+    ]
+
+let json = ws >>. jvalue .>> ws .>> eof
+
+test json """
+{
+    "name": "eric",
+    "age": 56,
+    "lotto_numbers": [32,544,33,343,565],
+    "projects": [
+        { "name": "vision", "active": false },
+        { "name": "flight deck", "active": true }
+    ]
+}
+"""
