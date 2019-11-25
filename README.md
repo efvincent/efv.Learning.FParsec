@@ -30,8 +30,8 @@ FSI Code completion & intellisense doesn't work when FSAC Runtime is set to .NET
 ```
 
 ## References
-[Tutorial](http://www.quanttec.com/fparsec/tutorial.html#preliminaries)
-[Small Example in Blog](https://geekeh.com/post/starting-small-with-fparsec/)
-[User's Guide](https://www.quanttec.com/fparsec/users-guide)
-[Trelford's Small Basic Parser Tutorial](http://trelford.com/blog/post/FParsec.aspx)
-Interesting post from perspective of a Haskeller [refactoring to FParsec](https://blog.leifbattermann.de/2015/12/15/refactoring-to-fparsec)
+* [Tutorial](http://www.quanttec.com/fparsec/tutorial.html#preliminaries)
+* [Small Example in Blog](https://geekeh.com/post/starting-small-with-fparsec/)
+* [User's Guide](https://www.quanttec.com/fparsec/users-guide)
+* [Trelford's Small Basic Parser Tutorial](http://trelford.com/blog/post/FParsec.aspx)
+* Interesting post from perspective of a Haskeller [refactoring to FParsec](https://blog.leifbattermann.de/2015/12/15/refactoring-to-fparsec)
