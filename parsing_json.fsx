@@ -5,11 +5,13 @@ open FParsec
 
 let p : Parser<string,unit> = pstring "test"
 
+/// Utility function to execute parsers against a string
 let test p str =
   match run p str with
   | Success(result,_,_) -> printfn "Success: %A" result
   | Failure(errMsg,_,_) -> printfn "Failure: %s" errMsg
 
+/// Top level DU for Json element types
 type Json = 
     | JString of string
     | JNumber of float
@@ -76,6 +78,7 @@ let jvalue, jvalueRef = createParserForwardedToRef<Json,unit>()
     finished constructing it.
 *)
 
+/// Shorthand for standard parser fun `spaces`
 let ws = spaces
 
 let listBetweenStrings sOpen sClose pElement f =
@@ -101,6 +104,7 @@ do jvalueRef := choice
 
 let json = ws >>. jvalue .>> ws .>> eof
 
+/// A quick test of the Json parser
 test json """
 {
     "name": "eric",
