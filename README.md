@@ -24,7 +24,8 @@ error FS0074: The type referenced through’FParsec.CharStream`1’ is defined i
 ```
 
 ### FSI Setup
-FSI Code completion & intellisense doesn't work when FSAC Runtime is set to .NET Core in vscode. It needs to be set to net:
+FSI Code completion & intellisense doesn't work when FSAC Runtime is set to .NET Core in vscode.
+It needs to be set to net:
 ```
 "FSharp.fsacRuntime": "net"
 ```
